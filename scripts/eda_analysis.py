@@ -1,9 +1,12 @@
+import re
+from typing import Counter
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from textblob import TextBlob
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
+from wordcloud import WordCloud
 
 class EDAAnalysis:
     def __init__(self, file_path):
@@ -48,6 +51,18 @@ class EDAAnalysis:
             raise ValueError("Data is not loaded. Call load_data() first.")
         publisher_counts = self.data['publisher'].value_counts()
         print(publisher_counts)
+                # Extract unique email domains if present
+        email_publishers = self.data['publisher'].str.contains('@', na=False)
+        unique_domains = (
+            self.data.loc[email_publishers, 'publisher']
+            .str.split('@').str[1]
+            .value_counts()
+        )
+        if not unique_domains.empty:
+            print("\nUnique Domains:")
+            print(unique_domains)
+        else:
+            print("\nNo email addresses found among publishers.")
 
         # Plot top publishers
         plt.figure(figsize=(12, 6))
@@ -85,6 +100,24 @@ class EDAAnalysis:
         articles_by_month = self.data['month'].value_counts()
         print("\nArticles by month:")
         print(articles_by_month)
+
+        # Plotting the results
+        fig, axes = plt.subplots(2, 1, figsize=(10, 8))
+
+        # Plot articles by day of the week
+        articles_by_day.plot(kind='bar', ax=axes[0], color='skyblue')
+        axes[0].set_title('Articles by Day of the Week')
+        axes[0].set_xlabel('Day of the Week')
+        axes[0].set_ylabel('Number of Articles')
+
+        # Plot articles by month
+        articles_by_month.plot(kind='bar', ax=axes[1], color='lightgreen')
+        axes[1].set_title('Articles by Month')
+        axes[1].set_xlabel('Month')
+        axes[1].set_ylabel('Number of Articles')
+
+        plt.tight_layout()
+        plt.show()
     def perform_sentiment_analysis(self):
         """
         Perform sentiment analysis on the headlines.
@@ -106,9 +139,18 @@ class EDAAnalysis:
             else:
                 return 'neutral'
 
+        # Apply sentiment analysis
         self.data['sentiment'] = self.data['headline'].apply(get_sentiment)
         print("Sentiment analysis completed.")
         print(self.data['sentiment'].value_counts())
+
+        # Plot sentiment distribution
+        plt.figure(figsize=(8, 6))
+        sns.countplot(x='sentiment', data=self.data, palette='Set2')
+        plt.title('Sentiment Distribution of Headlines')
+        plt.xlabel('Sentiment')
+        plt.ylabel('Count')
+        plt.show()
 
     def perform_topic_modeling(self, num_topics=5, num_keywords=10):
         """
@@ -131,10 +173,30 @@ class EDAAnalysis:
         for i, topic in enumerate(lda.components_):
             keywords = [vectorizer.get_feature_names_out()[index] for index in topic.argsort()[-num_keywords:]]
             topics[f"Topic {i + 1}"] = keywords
-        
+
         print("Topic modeling completed.")
         for topic, keywords in topics.items():
             print(f"{topic}: {', '.join(keywords)}")
+        
+        # Plot the topic weights (importance of each topic)
+        plt.figure(figsize=(8, 6))
+        topic_weights = [sum(topic) for topic in lda.components_]
+        plt.bar(range(1, num_topics + 1), topic_weights, color='skyblue')
+        plt.title('Topic Weights Distribution')
+        plt.xlabel('Topic')
+        plt.ylabel('Weight')
+        plt.xticks(range(1, num_topics + 1))
+        plt.show()
+
+        # WordCloud for each topic
+        for i, topic in enumerate(lda.components_):
+            plt.figure(figsize=(8, 6))
+            wordcloud = WordCloud(width=800, height=400, background_color='white').generate_from_frequencies(
+                {vectorizer.get_feature_names_out()[index]: topic[index] for index in topic.argsort()[-num_keywords:]})
+            plt.imshow(wordcloud, interpolation='bilinear')
+            plt.axis('off')
+            plt.title(f"Word Cloud for Topic {i + 1}")
+            plt.show()
     def preprocess_data(self):
         """
         Preprocess the dataset to ensure the date column is in datetime format.
@@ -159,6 +221,9 @@ class EDAAnalysis:
         # Group by date and count the number of articles per day
         daily_publications = self.data.groupby(self.data['date'].dt.date).size()
 
+        # Print the publication frequency for inspection
+        print(daily_publications)
+
         # Plot the publication frequency over time
         plt.figure(figsize=(12, 6))
         daily_publications.plot(kind='line', color='blue')
@@ -167,6 +232,7 @@ class EDAAnalysis:
         plt.ylabel('Number of Articles')
         plt.grid(True)
         plt.show()
+
 
     def analyze_publishing_times(self):
         """
@@ -181,6 +247,9 @@ class EDAAnalysis:
         # Group by hour and count the number of articles
         hourly_publications = self.data.groupby('hour').size()
 
+        # Print the hourly publication counts for inspection
+        print(hourly_publications)
+
         # Plot the distribution of publishing times
         plt.figure(figsize=(12, 6))
         hourly_publications.plot(kind='bar', color='green')
@@ -189,3 +258,129 @@ class EDAAnalysis:
         plt.ylabel('Number of Articles')
         plt.grid(True)
         plt.show()
+    def extract_keywords(self):
+        """
+        Extract keywords from the URL column for analysis.
+        """
+        if self.data is None:
+            print("No data loaded. Please load the data first.")
+            return None
+
+        def extract(url):
+            keywords = re.findall(r'\b\w+\b', url)  # Extract words
+            return [kw.lower() for kw in keywords if kw.isalpha()]  # Filter alphabetic words
+
+        self.data['keywords'] = self.data['url'].apply(extract)
+    print("Keywords extracted successfully.")
+
+    def categorize_news(self):
+        """
+        Categorize the news into predefined categories based on keywords.
+        """
+        if 'keywords' not in self.data.columns:
+            print("Keywords not found. Please extract keywords first.")
+            return None
+
+        # Define categories and their associated keywords
+        categories = {
+            'finance': ['stock', 'market', 'investment', 'profit', 'earnings'],
+            'technology': ['tech', 'software', 'ai', 'innovation', 'hardware'],
+            'healthcare': ['health', 'medicine', 'pharma', 'vaccine', 'doctor'],
+            'energy': ['oil', 'gas', 'energy', 'renewable', 'solar'],
+        }
+
+        def map_category(keywords):
+            matched_categories = []
+            for category, words in categories.items():
+                if any(word in keywords for word in words):
+                    matched_categories.append(category)
+            return matched_categories if matched_categories else ['other']
+
+        self.data['categories'] = self.data['keywords'].apply(map_category)
+        print("News categorized successfully.")
+
+    def analyze_category_by_publisher(self):
+        """
+        Analyze the distribution of news categories for each publisher.
+        """
+        if 'categories' not in self.data.columns:
+            print("Categories not found. Please categorize news first.")
+            return None
+
+        # Flatten the category lists for analysis
+        self.data['categories_flat'] = self.data['categories'].apply(lambda x: ','.join(x))
+
+        category_distribution = self.data.groupby('publisher')['categories_flat'].apply(lambda x: Counter(','.join(x).split(',')).most_common())
+        print("Category analysis by publisher completed.")
+        return category_distribution
+
+    def plot_publisher_contributions(self, top_n=10):
+        """
+        Plot the top publishers contributing to the news feed.
+        """
+        if self.data is None:
+            print("No data loaded. Please load the data first.")
+            return None
+
+        publisher_counts = self.data['publisher'].value_counts().head(top_n)
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x=publisher_counts.values, y=publisher_counts.index, palette="viridis")
+        plt.title(f"Top {top_n} Publishers Contributing to the News Feed")
+        plt.xlabel("Number of Articles")
+        plt.ylabel("Publisher")
+        plt.show()
+
+    def plot_category_distribution(self):
+        """
+        Plot the distribution of news categories.
+        """
+        if 'categories' not in self.data.columns:
+            print("Categories not found. Please categorize news first.")
+            return None
+
+        # Flatten and count category frequencies
+        all_categories = [cat for sublist in self.data['categories'] for cat in sublist]
+        category_counts = Counter(all_categories)
+
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x=list(category_counts.values()), y=list(category_counts.keys()), palette="viridis")
+        plt.title("Distribution of News Categories")
+        plt.xlabel("Number of Articles")
+        plt.ylabel("Category")
+        plt.show()
+
+    def extract_domains_from_publishers(self):
+        """
+        Extract unique domains from publishers if email-style names are used.
+        """
+        if self.data is None:
+            print("No data loaded. Please load the data first.")
+            return None
+
+        def extract_domain(publisher):
+            if "@" in publisher:
+                domain = publisher.split("@")[-1]
+                return domain
+            return None
+
+        self.data['domains'] = self.data['publisher'].apply(extract_domain)
+        domain_counts = self.data['domains'].value_counts()
+        print("Domain extraction completed.")
+        return domain_counts
+
+    def plot_top_domains(self, top_n=10):
+        """
+        Plot the top domains contributing to the news feed.
+        """
+        if 'domains' not in self.data.columns:
+            print("Domains not found. Please extract domains first.")
+            return None
+
+        domain_counts = self.data['domains'].value_counts().head(top_n)
+        plt.figure(figsize=(10, 6))
+        sns.barplot(x=domain_counts.values, y=domain_counts.index, palette="viridis")
+        plt.title(f"Top {top_n} Domains Contributing to the News Feed")
+        plt.xlabel("Number of Articles")
+        plt.ylabel("Domain")
+        plt.show()
+
