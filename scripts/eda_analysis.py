@@ -135,3 +135,57 @@ class EDAAnalysis:
         print("Topic modeling completed.")
         for topic, keywords in topics.items():
             print(f"{topic}: {', '.join(keywords)}")
+    def preprocess_data(self):
+        """
+        Preprocess the dataset to ensure the date column is in datetime format.
+        """
+        if self.data is None:
+            raise ValueError("Data is not loaded. Call load_data() first.")
+
+        # Ensure the 'date' column is in datetime format
+        self.data['date'] = pd.to_datetime(self.data['date'], errors='coerce')
+
+        # Drop rows with invalid or missing dates
+        self.data.dropna(subset=['date'], inplace=True)
+        print("Data preprocessing completed.")
+
+    def analyze_publication_frequency(self):
+        """
+        Analyze publication frequency over time.
+        """
+        if self.data is None:
+            raise ValueError("Data is not loaded. Call load_data() first.")
+
+        # Group by date and count the number of articles per day
+        daily_publications = self.data.groupby(self.data['date'].dt.date).size()
+
+        # Plot the publication frequency over time
+        plt.figure(figsize=(12, 6))
+        daily_publications.plot(kind='line', color='blue')
+        plt.title('Publication Frequency Over Time')
+        plt.xlabel('Date')
+        plt.ylabel('Number of Articles')
+        plt.grid(True)
+        plt.show()
+
+    def analyze_publishing_times(self):
+        """
+        Analyze the times of the day when most articles are published.
+        """
+        if self.data is None:
+            raise ValueError("Data is not loaded. Call load_data() first.")
+
+        # Extract the hour of publication
+        self.data['hour'] = self.data['date'].dt.hour
+
+        # Group by hour and count the number of articles
+        hourly_publications = self.data.groupby('hour').size()
+
+        # Plot the distribution of publishing times
+        plt.figure(figsize=(12, 6))
+        hourly_publications.plot(kind='bar', color='green')
+        plt.title('Distribution of Publishing Times')
+        plt.xlabel('Hour of Day')
+        plt.ylabel('Number of Articles')
+        plt.grid(True)
+        plt.show()
