@@ -12,7 +12,6 @@ This project involves performing comprehensive Exploratory Data Analysis (EDA) o
 5. [Challenges](#challenges)  
 6. [Technologies Used](#technologies-used)  
 7. [How to Use](#how-to-use)  
-8. [Future Improvements](#future-improvements)  
 
 ---
 
@@ -51,7 +50,6 @@ The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with 
    - Analyzed trends by day, month, and publication hour.  
 
 
----
 
 ## **Results and Insights**  
 
@@ -74,7 +72,7 @@ The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with 
 ## **Challenges**  
 - **Large Dataset:** Handling over a million entries required optimizing computations and storage.    
 
----
+
 
 ## **Technologies Used**  
 - Python: For data analysis and NLP processing.  
@@ -83,7 +81,7 @@ The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with 
   - `matplotlib`, `seaborn`: Data visualization.  
   - `nltk`, `scikit-learn`: Natural Language Processing and topic modeling.  
 
----
+
 
 ## **How to Use**  
 1. Clone this repository:  
