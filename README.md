@@ -2,7 +2,7 @@
 
 This project involves performing comprehensive Exploratory Data Analysis (EDA) on a dataset containing over 1 million news headlines. The aim is to uncover trends, patterns, and actionable insights relevant to publication activity, headline content, and sentiment.  
 
----
+
 
 ## **Table of Contents**  
 1. [Project Overview](#project-overview)  
@@ -13,7 +13,7 @@ This project involves performing comprehensive Exploratory Data Analysis (EDA) o
 6. [Technologies Used](#technologies-used)  
 7. [How to Use](#how-to-use)  
 
----
+
 
 ## **Project Overview**  
 The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with detailed analysis performed to explore:  
@@ -22,7 +22,7 @@ The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with 
 - Sentiment and topic modeling using Natural Language Processing (NLP).  
 - Time series analysis to identify publishing patterns and spikes.  
 
----
+
 
 ## **Key Features**  
 - **Descriptive Statistics:**  
@@ -37,7 +37,7 @@ The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with 
   - Publication peaks observed during market events.  
   - Articles are predominantly published between 7:00 AM and 11:00 AM, with a peak at 10:00 AM.  
 
----
+
 
 ## **Methodology**  
 1. **Data Preprocessing:**  
@@ -67,7 +67,7 @@ The dataset comprises 1,407,328 news headlines from over 1,034 publishers, with 
 - **Daily Trends:** Peak activity on Thursdays; minimal activity on weekends.  
 - **Hourly Trends:** Most articles are published during trading hours, with a peak at **10:00 AM**.  
 
----
+
 
 ## **Challenges**  
 - **Large Dataset:** Handling over a million entries required optimizing computations and storage.    
