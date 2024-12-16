@@ -8,6 +8,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 from wordcloud import WordCloud
 
+
 class EDAAnalysis:
     def __init__(self, file_path):
         """
@@ -51,7 +52,7 @@ class EDAAnalysis:
             raise ValueError("Data is not loaded. Call load_data() first.")
         publisher_counts = self.data['publisher'].value_counts()
         print(publisher_counts)
-                # Extract unique email domains if present
+        # Extract unique email domains if present
         email_publishers = self.data['publisher'].str.contains('@', na=False)
         unique_domains = (
             self.data.loc[email_publishers, 'publisher']
@@ -80,10 +81,10 @@ class EDAAnalysis:
         """
         if self.data is None:
             raise ValueError("Data is not loaded. Call load_data() first.")
-        
+
         # Handle datetime parsing with flexible format and coercion for invalid values
         self.data['date'] = pd.to_datetime(self.data['date'], errors='coerce')
-        
+
         # Drop rows with invalid or missing dates
         self.data = self.data.dropna(subset=['date'])
 
@@ -118,6 +119,7 @@ class EDAAnalysis:
 
         plt.tight_layout()
         plt.show()
+
     def perform_sentiment_analysis(self):
         """
         Perform sentiment analysis on the headlines.
@@ -125,10 +127,10 @@ class EDAAnalysis:
         """
         if self.data is None:
             raise ValueError("Data is not loaded. Call load_data() first.")
-        
+
         if 'headline' not in self.data.columns:
             raise ValueError("The dataset must contain a 'headline' column.")
-        
+
         def get_sentiment(text):
             analysis = TextBlob(text)
             polarity = analysis.sentiment.polarity
@@ -177,7 +179,7 @@ class EDAAnalysis:
         print("Topic modeling completed.")
         for topic, keywords in topics.items():
             print(f"{topic}: {', '.join(keywords)}")
-        
+
         # Plot the topic weights (importance of each topic)
         plt.figure(figsize=(8, 6))
         topic_weights = [sum(topic) for topic in lda.components_]
@@ -197,6 +199,7 @@ class EDAAnalysis:
             plt.axis('off')
             plt.title(f"Word Cloud for Topic {i + 1}")
             plt.show()
+
     def preprocess_data(self):
         """
         Preprocess the dataset to ensure the date column is in datetime format.
@@ -233,7 +236,6 @@ class EDAAnalysis:
         plt.grid(True)
         plt.show()
 
-
     def analyze_publishing_times(self):
         """
         Analyze the times of the day when most articles are published.
@@ -258,6 +260,7 @@ class EDAAnalysis:
         plt.ylabel('Number of Articles')
         plt.grid(True)
         plt.show()
+
     def extract_keywords(self):
         """
         Extract keywords from the URL column for analysis.
@@ -271,6 +274,7 @@ class EDAAnalysis:
             return [kw.lower() for kw in keywords if kw.isalpha()]  # Filter alphabetic words
 
         self.data['keywords'] = self.data['url'].apply(extract)
+
     print("Keywords extracted successfully.")
 
     def categorize_news(self):
@@ -310,7 +314,8 @@ class EDAAnalysis:
         # Flatten the category lists for analysis
         self.data['categories_flat'] = self.data['categories'].apply(lambda x: ','.join(x))
 
-        category_distribution = self.data.groupby('publisher')['categories_flat'].apply(lambda x: Counter(','.join(x).split(',')).most_common())
+        category_distribution = self.data.groupby('publisher')['categories_flat'].apply(
+            lambda x: Counter(','.join(x).split(',')).most_common())
         print("Category analysis by publisher completed.")
         return category_distribution
 
@@ -383,4 +388,3 @@ class EDAAnalysis:
         plt.xlabel("Number of Articles")
         plt.ylabel("Domain")
         plt.show()
-
