@@ -1,12 +1,8 @@
-Here’s an updated version of your **README** incorporating the stock correlation analysis results while maintaining the existing structure:
 
----
 
-# **Exploratory Data Analysis (EDA) on Stock News Headlines**  
+# **Exploratory Data Analysis (EDA) on Stock News Headlines and Different company stock data**  
 
-This project combines comprehensive **Exploratory Data Analysis (EDA)** on a dataset containing over 1 million news headlines with **correlation analysis** to evaluate the relationship between news sentiment and stock price movements. The aim is to uncover trends, patterns, and actionable insights relevant to publication activity, sentiment, and stock behavior.  
 
----
 
 ## **Table of Contents**  
 1. [Project Overview](#project-overview)  
