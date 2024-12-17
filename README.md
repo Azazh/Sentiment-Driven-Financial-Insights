@@ -26,7 +26,7 @@ The dataset comprises **1,407,328 news headlines** from over 1,034 publishers, c
 - **Time series analysis** to identify publishing patterns.  
 - **Sentiment vs. Stock Returns** correlation analysis to evaluate how news sentiment affects daily stock price movements.  
 
----
+
 
 ## **Key Features**  
 - **Descriptive Statistics:**  
@@ -43,7 +43,7 @@ The dataset comprises **1,407,328 news headlines** from over 1,034 publishers, c
 - **Time Series Analysis:**  
    - Publication trends by day, month, and hour.  
 
----
+
 
 ## **Methodology**  
 1. **Data Preprocessing:**  
@@ -61,7 +61,7 @@ The dataset comprises **1,407,328 news headlines** from over 1,034 publishers, c
 5. **Descriptive Statistics & NLP:**  
    - Conducted headline length analysis, publisher contributions, and topic modeling.  
 
----
+
 
 ## **Results and Insights**  
 
@@ -80,7 +80,7 @@ The dataset comprises **1,407,328 news headlines** from over 1,034 publishers, c
 - **Daily Trends:** Peak publication activity occurs on Thursdays; weekends show minimal activity.  
 - **Hourly Trends:** Most news articles are published during market hours, with a sharp peak at **10:00 AM**.  
 
----
+
 
 ## **Correlation Analysis**  
 
@@ -100,14 +100,14 @@ The correlation analysis examined the relationship between **average daily senti
 - All correlation coefficients are close to **zero**, indicating negligible relationships between news sentiment and stock price movements.  
 - High **p-values** (greater than 0.05) suggest that the correlations are not statistically significant.  
 
----
+
 
 ## **Challenges**  
 - **Date Alignment:** Aligning sentiment data with valid stock trading days required rigorous data normalization.  
 - **Sparse Sentiment Data:** On certain days, a limited number of news articles resulted in less representative sentiment scores.  
 - **Low Correlation:** Results suggest external factors (e.g., market forces) may dominate short-term stock price changes, reducing sentiment influence.  
 
----
+
 
 ## **Technologies Used**  
 - **Python**: Primary language for data processing and analysis.  
@@ -117,19 +117,19 @@ The correlation analysis examined the relationship between **average daily senti
    - `nltk`, `scikit-learn`: Sentiment analysis and NLP tools.  
    - `TA-Lib`, `PyNance`: Stock price indicators and financial metrics.  
 
----
+
 
 ## **How to Use**  
 
 1. **Clone this repository:**  
    ```bash  
    git clone https://github.com/Azazh/Sentiment-Driven-Financial-Insights.git  
-   ```
+   
 
 2. **Install the required libraries:**  
    ```bash  
    pip install -r requirements.txt  
-   ```
+   
 
 3. **Run the analysis notebook:**  
    - Open and execute `Stock_Analysis_Insights.ipynb` in Jupyter Notebook.  
@@ -137,4 +137,4 @@ The correlation analysis examined the relationship between **average daily senti
 4. **Output Files:**  
    - Analysis results and visualizations will be generated under the `output/` directory.  
 
----
+
