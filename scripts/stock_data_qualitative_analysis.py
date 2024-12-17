@@ -1,4 +1,5 @@
 import pandas as pd
+from scipy.stats import pearsonr
 import talib
 import matplotlib.pyplot as plt
 import os
@@ -93,10 +94,20 @@ class StockDataAnalyzer:
     def analyze_all_stocks(self):
         """
         Analyze all stock data files in the directory.
+        Display correlation and p-value between Close price and RSI.
         """
         for file_name in os.listdir(self.data_path):
             if file_name.endswith('.csv'):
                 print(f"Analyzing {file_name}...")
                 df = self.load_data(file_name)
                 df = self.calculate_technical_indicators(df)
+                
+                # Drop NaN values to ensure valid correlation calculations
+                valid_data = df[['Close', 'RSI']].dropna()
+                
+                # Calculate correlation and p-value
+                correlation, p_value = pearsonr(valid_data['Close'], valid_data['RSI'])
+                print(f"{file_name}: Correlation={correlation:.4f}, P-Value={p_value:.4f}")
+                
+                # Call the visualization
                 self.visualize_data(df, stock_name=file_name.split('_')[0])
